@@ -5,6 +5,7 @@ import path from 'path';
 import connectDB from './config/db.js';
 import authRouter from './routes/auth.route.js';
 import errorMiddleware from "./middlewares/error.middleware.js";
+import userRouter from './routes/user.route.js';
 
 
 const app = express();
@@ -21,13 +22,15 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(errorMiddleware)
 
 // Routes
 app.use('/api/auth', authRouter);
-// app.use ('/api/users', usersRouter);
+app.use ('/api/users', userRouter);
 // app.use('/api/tasks', taskRouter);
 // app.use('/api/reports', reportRouter);
+
+// Error Middleware
+app.use(errorMiddleware);
 
 // Start Server
 const PORT = process.env.PORT || 5000;

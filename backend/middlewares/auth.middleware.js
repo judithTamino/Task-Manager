@@ -5,21 +5,31 @@ import User from '../models/user.model.js';
 export const protect = async (req, res, next) => {
   try {
     let token = req.headers.authorization;
-
-    if (token && token.startsWith("Bearer")) {
+    if (token && token.startsWith("Bearer"))
       token = token.split(" ")[1]; // extract token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
-    } else {
-      res.status(401).json({ msg: "Not authorized, no token" });
+
+    if (!token) {
+      res.status(401);
+      throw new Error("No token");
     }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+    req.user = user;
+    next();
+    
   } catch (error) {
-    res.status(401).json({ msg: "Token failed", error: error.message });
+    next(error);
   }
 };
 
 // Middleware to protect routes
 export const adminOnly = (req, res, next) => {
-  if(req.user && req.user.role === "admin") next();
-  else res.status(403).json({msg: "Access denied, admin only"});
+  if (req.user && req.user.role === "admin") next();
+  else res.status(403).json({ msg: "Access denied, admin only" });
 };

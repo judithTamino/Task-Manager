@@ -1,34 +1,16 @@
 const errorMiddleware = (err, req, res, next) => {
-  try {
-    let error = { ...err };
-    error.message = err.message;
-    console.error(err);
+  const statusCode = res.statusCode ? res.statusCode : 500;
 
-    // Mongoose bad ObjectId
-    if (err.name === "CastError") {
-      const msg = "Resource not found.";
-      error = new Error(msg);
-      error.status = 404;
-    }
-
-    // Mongoose duplicate key
-    if (err.code === 11000) {
-      const msg = "Duplicate field value entered."
-      error = new Error(msg);
-      error.status = 400;
-    }
-
-    // Mongoose validation key
-    if (err.name === "validationError") {
-      const msg = Object.values(err.errors).map(val => val.message);
-      error = new Error(msg.join(', '));
-      error.status = 400;
-    }
-
-    res.status(error.status || 500).json({ success: false, error: error.message || "Server Error" });
-  } catch (error) {
-    next(error);
+  const errorTitles = {
+    400: "Bad Request",
+    401: "Unauthorized",
+    403: "Forbidden",
+    404: "Not Found",
+    500: "Server Error",
   }
+
+  res.status(statusCode)
+    .json({ title: errorTitles[statusCode] || "Unknown Error", msg: err.message, stack: err.stack });
 };
 
 export default errorMiddleware;
