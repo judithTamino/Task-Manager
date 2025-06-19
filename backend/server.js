@@ -6,6 +6,7 @@ import connectDB from './config/db.js';
 import authRouter from './routes/auth.route.js';
 import errorMiddleware from "./middlewares/error.middleware.js";
 import userRouter from './routes/user.route.js';
+import taskRouter from './routes/task.route.js';
 
 
 const app = express();
@@ -26,7 +27,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRouter);
 app.use ('/api/users', userRouter);
-// app.use('/api/tasks', taskRouter);
+app.use('/api/tasks', taskRouter);
 // app.use('/api/reports', reportRouter);
 
 // Error Middleware
