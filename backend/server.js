@@ -7,6 +7,7 @@ import authRouter from './routes/auth.route.js';
 import errorMiddleware from "./middlewares/error.middleware.js";
 import userRouter from './routes/user.route.js';
 import taskRouter from './routes/task.route.js';
+import reportRouter from './routes/report.route.js';
 
 
 const app = express();
@@ -28,7 +29,7 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use ('/api/users', userRouter);
 app.use('/api/tasks', taskRouter);
-// app.use('/api/reports', reportRouter);
+app.use('/api/reports', reportRouter);
 
 // Error Middleware
 app.use(errorMiddleware);
