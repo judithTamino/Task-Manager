@@ -1,34 +1,27 @@
-import { useState, type FunctionComponent } from 'react';
+import { Formik, Form } from 'formik';
+import { type FunctionComponent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import Input from '../../components/Inputs/Input';
-import { validateEmail } from '../../utils/helper';
+import { loginSchema } from '../../schemas/user.schema';
 
 interface LoginProps {}
 
-const Login: FunctionComponent<LoginProps> = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+interface ILogin {
+  email: string;
+  password: string;
+}
 
-  const navigate = useNavigate();
+const Login: FunctionComponent<LoginProps> = () => {
+const navigate = useNavigate();
+
+  const initialValues = {
+    email: '',
+    password: '',
+  };
 
   // Handle Login Form Sumbit
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
-
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
-    if (!password) {
-      setError('Please enter the password');
-      return;
-    }
-
-    setError("");
-
+  const handleLogin = async (values: ILogin) => {
     // Login API Call
   };
 
@@ -40,36 +33,46 @@ const Login: FunctionComponent<LoginProps> = () => {
           Please enter your details to login
         </p>
 
-        <form onSubmit={handleLogin}>
-          <Input
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
-            label='Email Address'
-            placeholder='johnDoe@email.com'
-            type='text'
-          />
+        <Formik
+          initialValues={initialValues}
+          validationSchema={loginSchema}
+          onSubmit={handleLogin}
+        >
+          {({ dirty, isValid }) => (
+            <Form>
+              <Input
+                label='Email Address'
+                placeholder='johnDoe@email.com'
+                type='text'
+                name='email'
+              />
+              <Input
+                label='Password'
+                placeholder='Min 8 Characters'
+                type='password'
+                name='password'
+              />
 
-          <Input
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            label='Password'
-            placeholder='Min 8 Characters'
-            type='password'
-          />
+              <button
+                type='submit'
+                disabled={!dirty || isValid}
+                className='btn-primary'
+              >
+                LOGIN
+              </button>
 
-          {error && <p className='text-red-500 text-xs pb-2.5'>{error}</p>}
-
-          <button type='submit' className='btn-primary'>
-            LOGIN
-          </button>
-
-          <p className='text-[13px] text-slate-800 mt-3'>
-            Don`t have an account?{' '}
-            <Link className='font-medium text-primary underline' to='/signup'>
-              Signup
-            </Link>
-          </p>
-        </form>
+              <p className='text-[13px] text-slate-800 mt-3'>
+                Don`t have an account?{' '}
+                <Link
+                  className='font-medium text-primary underline'
+                  to='/signup'
+                >
+                  Signup
+                </Link>
+              </p>
+            </Form>
+          )}
+        </Formik>
       </div>
     </AuthLayout>
   );

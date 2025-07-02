@@ -1,41 +1,40 @@
 import { useState, type FunctionComponent } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
+import { useField } from 'formik';
 
 interface InputProps {
-  value: string;
-  onChange: (e: any) => void;
   label: string;
   placeholder: string;
   type: string;
+  name: string;
 }
 
 const Input: FunctionComponent<InputProps> = ({
-  value,
-  onChange,
   label,
-  placeholder,
   type,
+  ...props
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [field, meta] = useField(props);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   return (
-    <div className=''>
-      <label className='text-[13px] text-slate-800'>{label}</label>
+    <>
+      <label htmlFor={props.name} className='text-[13px] text-slate-800'>
+        {label}
+      </label>
       <div className='input-box'>
         <input
           type={
             type === 'password' ? (showPassword ? 'text' : 'password') : type
           }
-          placeholder={placeholder}
+          {...field}
+          {...props}
           className='w-full bg-transparent outline-none'
-          value={value}
-          onChange={(e) => onChange(e)}
         />
-
         {type === 'password' && (
           <>
             {showPassword ? (
@@ -54,7 +53,10 @@ const Input: FunctionComponent<InputProps> = ({
           </>
         )}
       </div>
-    </div>
+      {meta.touched && meta.error ? (
+        <p className='text-red-500 text-xs pb-2.5'>{meta.error}</p>
+      ) : null}
+    </>
   );
 };
 
