@@ -1,9 +1,15 @@
-import { Formik, Form } from 'formik';
 import { type FunctionComponent } from 'react';
+import { Formik, Form } from 'formik';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import Input from '../../components/Inputs/Input';
-import { loginSchema } from '../../schemas/user.schema';
+import { loginSchema } from '../../schemas/auth.schema';
+import axiosInstance from '../../utils/axiosInstance';
+import { API_PATHS } from '../../utils/apiPath';
+import { decodeJwtToken } from '../../utils/helper';
+import { toast } from 'react-hot-toast';
+import { isAxiosError } from 'axios';
+import { useAuth } from '../../context/auth.context';
 
 interface LoginProps {}
 
@@ -12,17 +18,32 @@ interface ILogin {
   password: string;
 }
 
-const Login: FunctionComponent<LoginProps> = () => {
-const navigate = useNavigate();
+const initialValues = {
+  email: '',
+  password: '',
+};
 
-  const initialValues = {
-    email: '',
-    password: '',
-  };
+const Login: FunctionComponent<LoginProps> = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Handle Login Form Sumbit
   const handleLogin = async (values: ILogin) => {
-    // Login API Call
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, values);
+      const { token } = response.data;
+
+      if (token) {
+        localStorage.setItem('token', token);
+        login(token);
+
+        const role = decodeJwtToken(token).role;
+        if (role === 'admin') navigate('/admin/dashboard');
+        else navigate('/user/dashboard');
+      }
+    } catch (error) {
+      if (isAxiosError(error)) toast.error(error.response?.data.msg);
+    }
   };
 
   return (
@@ -55,7 +76,7 @@ const navigate = useNavigate();
 
               <button
                 type='submit'
-                disabled={!dirty || isValid}
+                disabled={!dirty || !isValid}
                 className='btn-primary'
               >
                 LOGIN

@@ -4,13 +4,14 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 
 // Generate JWT Token
-const generateToken = (userId) => jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+const generateToken = (user) => jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-// @desc Register a new user
-// @route POST/api/auth/register
+// @desc   Register a new user
+// @route  POST/api/auth/register
 // @access public
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, image, adminInviteToken } = req.body;
+  console.log(req.body);
 
   if (!name || !email || !password) {
     res.status(400);
@@ -33,8 +34,8 @@ export const registerUser = asyncHandler(async (req, res) => {
   res.status(201).json(user);
 });
 
-// @desc Login user
-// @route POST/api/auth/login
+// @desc   Login user
+// @route  POST/api/auth/login
 // @access public
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -52,20 +53,17 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid email or password");
   }
 
-  const accessToken = generateToken(user._id);
+  const accessToken = generateToken(user);
 
   // Return data with jwt
-  res.status(200).json({ success: true, data: accessToken });
-
+  res.status(200).json({ success: true, token: accessToken });
 });
 
-// @desc Get user profile
-// @route GET/api/auth/profile
+// @desc   Get user profile
+// @route  GET/api/auth/profile
 // @access private (requires jwt)
 export const getUserProfile = asyncHandler(async (req, res) => {
-  console.log(req.user);
   const user = await User.findById(req.user.id).select("-password");
-  console.log(user);
 
   if (!user) {
     res.status(404);
@@ -75,8 +73,8 @@ export const getUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
-// @desc Update user profile
-// @route PUT/api/auth/profile
+// @desc   Update user profile
+// @route  PUT/api/auth/profile
 // @access private (requires jwt)
 export const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);

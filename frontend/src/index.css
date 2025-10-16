@@ -31,3 +31,7 @@
   hover:bg-blue-600/15 hover:text-blue-600
   cursor-pointer;
 }
+
+.btn-primary:disabled {
+  @apply bg-blue-600/15 hover:text-white cursor-not-allowed 
+}

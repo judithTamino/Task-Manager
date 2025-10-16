@@ -1,7 +1,7 @@
-export interface ISignup {
-  profilePic: any;
-  fullName: string;
+export interface IUser {
+  _id?: string;
+  name: string;
   email: string;
-  password: string;
-  adminInviteToken: string;
+  image?: string | null;
+  role: string;
 }

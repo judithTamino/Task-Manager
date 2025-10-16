@@ -43,7 +43,7 @@ export const getUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  res.status(200).json({ succsess: true, data: user });
+  res.status(200).json({ succsess: true, user: user });
 });
 
 // @desc   Delete user

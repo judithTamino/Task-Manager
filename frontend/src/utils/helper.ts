@@ -1,4 +1,6 @@
-export const validateEmail = (email) => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
-};
+import { jwtDecode } from 'jwt-decode';
+import type { IToken } from '../interfaces/auth.interface';
+
+
+// Decode jwt token
+export const decodeJwtToken = (token: string) : IToken => jwtDecode(token);

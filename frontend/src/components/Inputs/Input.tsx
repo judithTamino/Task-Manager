@@ -22,7 +22,7 @@ const Input: FunctionComponent<InputProps> = ({
   };
 
   return (
-    <>
+    <div>
       <label htmlFor={props.name} className='text-[13px] text-slate-800'>
         {label}
       </label>
@@ -56,7 +56,7 @@ const Input: FunctionComponent<InputProps> = ({
       {meta.touched && meta.error ? (
         <p className='text-red-500 text-xs pb-2.5'>{meta.error}</p>
       ) : null}
-    </>
+    </div>
   );
 };
 
